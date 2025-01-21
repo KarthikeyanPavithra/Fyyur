@@ -476,6 +476,32 @@ def show_artist(artist_id):
         return render_template('errors/500.html'), 500
 
 
+@app.route('/artists/<int:artist_id>/edit', methods=['GET'])
+def edit_artist(artist_id):
+    form = ArtistForm()
+
+    # Fetch artist data from the database
+    artist = Artist.query.get(artist_id)
+    if not artist:
+        flash(f"Artist with ID {artist_id} does not exist.")
+        return redirect(url_for('index'))
+
+    # Pre-fill the form fields with the artist data
+    form.name.data = artist.name
+    form.genres.data = artist.genres
+    form.city.data = artist.city
+    form.state.data = artist.state
+    form.phone.data = artist.phone
+    form.website_link.data = artist.website
+    form.facebook_link.data = artist.facebook_link
+    form.seeking_venue.data = artist.seeking_venue
+    form.seeking_description.data = artist.seeking_description
+    form.image_link.data = artist.image_link
+
+    # Pass the artist data for rendering
+    return render_template('forms/edit_artist.html', form=form, artist=artist)
+
+
 @app.route('/artists/<int:artist_id>/edit', methods=['POST'])
 def edit_artist_submission(artist_id):
     try:
@@ -528,7 +554,7 @@ def edit_venue(venue_id):
     form.city.data = venue.city
     form.state.data = venue.state
     form.phone.data = venue.phone
-    form.website_link.data = venue.website_link
+    form.website_link.data = venue.website
     form.facebook_link.data = venue.facebook_link
     form.seeking_talent.data = venue.seeking_talent
     form.seeking_description.data = venue.seeking_description
@@ -554,7 +580,7 @@ def edit_venue_submission(venue_id):
     venue.city = request.form['city']
     venue.state = request.form['state']
     venue.phone = request.form['phone']
-    venue.website_link = request.form['website_link']
+    venue.website = request.form['website_link']
     venue.facebook_link = request.form['facebook_link']
     venue.seeking_talent = 'seeking_talent' in request.form  # Checkbox or boolean field
     venue.seeking_description = request.form['seeking_description']
